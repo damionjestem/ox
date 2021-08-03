@@ -50,6 +50,10 @@ class Game extends React.Component {
       history: [
         {
           squares: Array(9).fill(null),
+          place: {
+            col: null,
+            row: null,
+          },
         },
       ],
       stepNumber: 0,
@@ -66,7 +70,16 @@ class Game extends React.Component {
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
     this.setState({
-      history: [...history, { squares: squares }],
+      history: [
+        ...history,
+        {
+          squares: squares,
+          place: {
+            col: i % 3,
+            row: Math.floor(i / 3),
+          },
+        },
+      ],
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
@@ -91,7 +104,15 @@ class Game extends React.Component {
     }
 
     const moves = history.map((step, move) => {
-      const desc = move ? "Go to move #" + move : "Go to game start";
+      const desc = move
+        ? "Go to move #" +
+          move +
+          " placed at (" +
+          history[move].place.col +
+          "," +
+          history[move].place.row +
+          ")"
+        : "Go to game start";
 
       return (
         <li key={move}>
@@ -120,7 +141,11 @@ class Game extends React.Component {
 // ========================================
 
 ReactDOM.render(<Game />, document.getElementById("root"));
-
+/**
+ * Takes squares and compares to defined winning locations
+ * @param {Array} squares array of board content
+ * @returns mark "X" or "O" of the winner
+ */
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
